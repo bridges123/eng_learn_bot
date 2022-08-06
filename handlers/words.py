@@ -2,7 +2,7 @@ import logging
 from aiogram.types import Message, CallbackQuery
 
 from loader import dp
-from utils import translate_word
+from db import translate_word
 from keyboards.inline import word_kb
 from keyboards.callback import word_callback
 

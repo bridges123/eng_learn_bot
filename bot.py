@@ -1,7 +1,8 @@
 import asyncio
 
 from loader import dp
-from handlers import admin, words
+from handlers import words
+from handlers.admin import add_word, get_words
 import db
 
 
