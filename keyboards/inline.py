@@ -3,7 +3,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from .callback import word_callback
 
 
-def word_kb(word: str) -> InlineKeyboardMarkup:
+def get_word_kb(word: str) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [

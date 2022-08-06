@@ -40,6 +40,21 @@ def translate_word(word_eng: str) -> str:
     return cursor.fetchone()
 
 
+def get_random_word() -> str:
+    cursor.execute("SELECT word_eng FROM words ORDER BY random() LIMIT 1")
+    return cursor.fetchone()
+
+
+def update_total_words_count(telegram_id: int) -> None:
+    cursor.execute("UPDATE users SET words_total = words_total + 1 WHERE telegram_id = ?", (telegram_id,))
+    con.commit()
+
+
+def update_guessed_words_count(telegram_id: int) -> None:
+    cursor.execute("UPDATE users SET words_guessed = words_guessed + 1 WHERE telegram_id = ?", (telegram_id,))
+    con.commit()
+
+
 def add_user(telegram_id: int) -> None:
     cursor.execute("INSERT INTO users (telegram_id, words_total, words_guessed, delay) VALUES (?, ?, ?, ?)",
                    (telegram_id, 0, 0, None))
