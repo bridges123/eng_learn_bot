@@ -2,7 +2,7 @@ import asyncio
 
 from loader import dp
 from handlers.admin import add_word, get_words
-from handlers.users import words
+from handlers.users import word, menu
 import db
 
 
