@@ -68,8 +68,23 @@ def get_random_word() -> str | None:
         return None
 
 
-def get_random_translates(word: str) -> tuple:
-    pass
+def get_translation_choices(word: str) -> list | None:
+    translation: str = translate_word(word)
+    cursor.execute(f"""
+        SELECT word_rus
+        FROM words w
+        LEFT JOIN guessed_words gw
+        ON w.id = gw.word_id 
+        WHERE word_eng != ? AND gw.word_id IS NULL
+        ORDER BY random()
+        LIMIT 3
+    """, (word,))
+    choices: list = cursor.fetchall()
+    if len(choices):
+        # Отброс tuples и совмещение в list с правильным переводом
+        return [word[0] for word in choices] + [translation]
+    else:
+        return None
 
 
 def update_total_words_count(telegram_id: int) -> None:
