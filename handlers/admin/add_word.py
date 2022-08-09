@@ -27,9 +27,9 @@ async def add_word_start(message: Message, state: FSMContext):
 async def add_word_eng(message: Message, state: FSMContext):
     word_eng: str = message.text
     translation: str = '123'
+    # translation: str = translate_word(word_eng)
     await state.update_data(word=word_eng)
     await state.update_data(translation=translation)
-    # translation: str = translate_word(word_eng)
     await message.answer(f'Предложен перевод: <b>{translation}</b>. Добавить, или предложите свой?',
                          reply_markup=add_word_kb)
     await AddWord.is_translate.set()

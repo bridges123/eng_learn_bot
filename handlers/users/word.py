@@ -2,7 +2,7 @@ import logging
 from aiogram.types import Message, CallbackQuery
 
 from loader import dp
-from db import translate_word, get_random_word
+from db import add_word_to_guessed, translate_word, get_random_word
 from db import update_total_words_count, update_translated_words_count
 from keyboards.inline import get_word_kb
 from keyboards.callback import word_callback
@@ -11,12 +11,11 @@ from keyboards.callback import word_callback
 @dp.message_handler(commands=['word'], state='*')
 async def train_word(message: Message):
     # добавить добавление текущего слова во временный список, чтобы нельзя было запустить много слов (одинаковые)
-    word = get_random_word()
+    word: str | None = get_random_word()
     if not word:
-        logging.error(f'Error get random word: {word}')
-        await message.answer('Ошибка с подбором слова!')
+        logging.error(f'Error all words translated: {word}')
+        await message.answer('Ошибка! Ты перевел уже все слова!')
     else:
-        word = word[0]
         await message.answer(f'Знаешь слово <b>{word}</b>?', reply_markup=get_word_kb(word))
 
 
@@ -24,10 +23,13 @@ async def train_word(message: Message):
 async def word_callback_know(call: CallbackQuery, callback_data: dict):  # state: FSMContext
     """ Обработка callback's от word_keyboard """
     await call.answer(cache_time=60)
-    translation = translate_word(callback_data.get('word'))
-    if translation:
-        translation = translation[0]
-    else:
+    word: str | None = callback_data.get('word')
+    if not word:
+        logging.error(f'Error get word of callback_data: {word}, {callback_data}')
+        await message.answer('Ошибка с выборкой слова (callback)!')
+    translation: str | None = translate_word(word)
+    if not translation:
+        logging.error(f'Error not translation: {translation}')
         translation = 'отсутствует'
     answer: str = callback_data.get('answer')
     telegram_id: int = call.from_user.id
@@ -36,6 +38,8 @@ async def word_callback_know(call: CallbackQuery, callback_data: dict):  # state
         # добавить запоминание неотгаданных слов
         case 'yes':
             msg = f'Ты угадал, молодец! Перевод: <b>{translation}</b>'
+            # Добавляем угаданное слово в фильтр-таблицу и инкременируем счётчики
+            add_word_to_guessed(telegram_id, word)
             update_translated_words_count(telegram_id)
             update_total_words_count(telegram_id)
         case 'no':
