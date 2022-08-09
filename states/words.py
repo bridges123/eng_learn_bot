@@ -14,3 +14,7 @@ class EditWord(StatesGroup):
     edited_word_rus = State()
     is_translate = State()
     confirm = State()
+
+
+class TrainWord(StatesGroup):
+    active = State()

@@ -68,6 +68,10 @@ def get_random_word() -> str | None:
         return None
 
 
+def get_random_translates(word: str) -> tuple:
+    pass
+
+
 def update_total_words_count(telegram_id: int) -> None:
     cursor.execute("UPDATE users SET words_total = words_total + 1 WHERE telegram_id = ?", (telegram_id,))
     con.commit()

@@ -1,11 +1,18 @@
 import logging
 from aiogram.types import Message, CallbackQuery
+from aiogram.dispatcher import FSMContext
 
 from loader import dp
 from db import add_word_to_guessed, translate_word, get_random_word
 from db import update_total_words_count, update_translated_words_count
 from keyboards.inline import get_word_kb
 from keyboards.callback import word_callback
+from states.words import TrainWord
+
+
+@dp.message_handler(commands=['word'], state=TrainWord.active)
+async def repetion_train_word(message: Message):
+    await message.answer('Ты уже запросил одно слово!')
 
 
 @dp.message_handler(commands=['word'], state='*')
@@ -17,10 +24,11 @@ async def train_word(message: Message):
         await message.answer('Ошибка! Ты перевел уже все слова!')
     else:
         await message.answer(f'Знаешь слово <b>{word}</b>?', reply_markup=get_word_kb(word))
+        await TrainWord.active.set()
 
 
 @dp.callback_query_handler(word_callback.filter(), state='*')
-async def word_callback_know(call: CallbackQuery, callback_data: dict):  # state: FSMContext
+async def word_callback_know(call: CallbackQuery, callback_data: dict, state: FSMContext):  # state: FSMContext
     """ Обработка callback's от word_keyboard """
     await call.answer(cache_time=60)
     word: str | None = callback_data.get('word')
@@ -35,7 +43,6 @@ async def word_callback_know(call: CallbackQuery, callback_data: dict):  # state
     telegram_id: int = call.from_user.id
     msg: str
     match answer:
-        # добавить запоминание неотгаданных слов
         case 'yes':
             msg = f'Ты угадал, молодец! Перевод: <b>{translation}</b>'
             # Добавляем угаданное слово в фильтр-таблицу и инкременируем счётчики
@@ -48,5 +55,6 @@ async def word_callback_know(call: CallbackQuery, callback_data: dict):  # state
         case _:
             msg = 'Ошибка!'
             logging.error(f'Error with answer in callback_data: {callback_data}')
-    # pass in bd
+    # pass in bd ???
+    await state.finish()
     await call.message.edit_text(msg)
