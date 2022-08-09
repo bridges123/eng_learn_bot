@@ -9,7 +9,8 @@ from loader import dp
 from states.words import AddWord
 from keyboards.reply import add_word_kb, add_button, own_button
 from keyboards.reply import confirm_kb, confirm_button, cancel_button
-from db import add_word, translate_word
+from services.translation import google_translate_word
+from db import add_word
 
 
 @dp.message_handler(commands=['start'], state='*', is_admin=True)
@@ -26,8 +27,8 @@ async def add_word_start(message: Message, state: FSMContext):
 @dp.message_handler(content_types=['text'], state=AddWord.word_eng, is_admin=True)
 async def add_word_eng(message: Message, state: FSMContext):
     word_eng: str = message.text
-    translation: str = '123'
-    # translation: str = translate_word(word_eng)
+    # translation: str = '123'
+    translation: str = google_translate_word(word_eng)
     await state.update_data(word=word_eng)
     await state.update_data(translation=translation)
     await message.answer(f'Предложен перевод: <b>{translation}</b>. Добавить, или предложите свой?',
