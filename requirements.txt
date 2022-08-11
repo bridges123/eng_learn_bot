@@ -1,0 +1,3 @@
+aiogram~=2.21
+environs~=9.5.0
+translators~=5.4.2
