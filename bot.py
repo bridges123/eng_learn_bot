@@ -1,8 +1,8 @@
 import asyncio
 
 from loader import dp
-from handlers.admin import add_word, get_words
-from handlers.users import word, menu
+from handlers.admin import admin_panel, add_word, get_words
+from handlers.users import menu, word_callback
 import db
 
 

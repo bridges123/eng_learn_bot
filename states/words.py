@@ -16,5 +16,5 @@ class EditWord(StatesGroup):
     confirm = State()
 
 
-class TrainWord(StatesGroup):
+class TranslateWord(StatesGroup):
     active = State()

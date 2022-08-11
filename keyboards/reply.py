@@ -18,7 +18,28 @@ confirm_kb.add(confirm_button, cancel_button)
 """ Клавиатура меню """
 menu_kb = ReplyKeyboardMarkup(resize_keyboard=True)
 train_button = KeyboardButton('Тренировка')
+stats = KeyboardButton('Статистика')
 delay_button = KeyboardButton('Задержка')
 distribution_button = KeyboardButton('Рассылка')
-menu_kb.add(train_button, delay_button)
-menu_kb.add(distribution_button)
+menu_kb.add(train_button, stats)
+menu_kb.add(delay_button, distribution_button)
+
+
+""" Клавиатура админа """
+admin_kb = ReplyKeyboardMarkup(resize_keyboard=True)
+words = KeyboardButton('Слова')
+get_stats = KeyboardButton('Статистика пользователя')
+settings = KeyboardButton('Настройки')
+support = KeyboardButton('Поддержка')
+admin_kb.add(words, get_stats)
+admin_kb.add(settings, support)
+
+
+""" Клавиатура выбора под-меню 'Слова' """
+words_choice_kb = ReplyKeyboardMarkup(resize_keyboard=True)
+all_words = KeyboardButton('Все слова')
+add_word = KeyboardButton('Добавить слово')
+change_word = KeyboardButton('Изменить слово')
+back = KeyboardButton('Назад')
+words_choice_kb.add(all_words, add_word)
+words_choice_kb.add(change_word, back)

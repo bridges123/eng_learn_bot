@@ -7,19 +7,14 @@ from aiogram.types import ReplyKeyboardRemove
 
 from loader import dp
 from states.words import AddWord
-from keyboards.reply import add_word_kb, add_button, own_button
-from keyboards.reply import confirm_kb, confirm_button, cancel_button
+from keyboards.reply import add_word_kb, confirm_kb, words_choice_kb, admin_kb
+from keyboards.reply import add_button, own_button, confirm_button, cancel_button
 from services.translation import google_translate_word
 from db import add_word
 
 
-@dp.message_handler(commands=['start'], state='*', is_admin=True)
-async def hello_admin_handler(message: Message):
-    await message.answer('Hello admin!')
-
-
 @dp.message_handler(commands=['add_word'], state='*', is_admin=True)
-async def add_word_start(message: Message, state: FSMContext):
+async def add_word_start(message: Message):
     await message.answer('Введите слово, которое хотите добавить:', reply_markup=ReplyKeyboardRemove())
     await AddWord.word_eng.set()
 
@@ -27,7 +22,6 @@ async def add_word_start(message: Message, state: FSMContext):
 @dp.message_handler(content_types=['text'], state=AddWord.word_eng, is_admin=True)
 async def add_word_eng(message: Message, state: FSMContext):
     word_eng: str = message.text
-    # translation: str = '123'
     translation: str = google_translate_word(word_eng)
     await state.update_data(word=word_eng)
     await state.update_data(translation=translation)
@@ -50,9 +44,9 @@ async def add_word_is_translate(message: Message, state: FSMContext):
             await message.answer('Введите свой вариант перевода:', reply_markup=ReplyKeyboardRemove())
             await AddWord.word_rus.set()
         case _:
-            logging.error(f'Error adding new word admin: {await state.get_data()}')
-            await message.answer('Ошибка добавления нового слова!', reply_markup=ReplyKeyboardRemove())
-            await state.finish()
+            if answer in ('/apanel', 'start'):
+                await message.answer('Admin panel:', reply_markup=admin_kb)
+    await state.finish()
 
 
 @dp.message_handler(content_types=['text'], state=AddWord.word_rus, is_admin=True)
@@ -75,14 +69,14 @@ async def add_word_confirm(message: Message, state: FSMContext):
             word = data.get('word')
             translation = data.get('translation')
             if word and translation:
-                add_word(word, translation, '') # add image path
-                await message.answer('Слово успешно добавлено.', reply_markup=ReplyKeyboardRemove())
+                add_word(word, translation, '')  # add image path
+                await message.answer('Слово успешно добавлено.', reply_markup=words_choice_kb)
             else:
                 logging.error(f'Error adding word: None values. {data}')
-                await message.answer('Ошибка добавления нового слова!', reply_markup=ReplyKeyboardRemove())
+                await message.answer('Ошибка добавления нового слова!', reply_markup=words_choice_kb)
         case cancel_button.text:
-            await message.answer('Добавление слова отменено!', reply_markup=ReplyKeyboardRemove())
+            await message.answer('Добавление слова отменено!', reply_markup=words_choice_kb)
         case _:
             logging.error(f'Error confirm new word admin: {answer}')
-            await message.answer('Ошибка с подтверждением!', reply_markup=ReplyKeyboardRemove())
+            await message.answer('Ошибка с подтверждением!', reply_markup=words_choice_kb)
     await state.finish()

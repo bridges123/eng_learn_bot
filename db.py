@@ -43,7 +43,7 @@ def add_word(word_eng: str, word_rus: str, word_image: str) -> None:
     con.commit()
 
 
-def translate_word(word_eng: str) -> str | None:
+def get_word_translation(word_eng: str) -> str | None:
     cursor.execute("SELECT word_rus FROM words WHERE word_eng = ?", (word_eng,))
     translation = cursor.fetchone()
     if translation:
@@ -69,7 +69,7 @@ def get_random_word() -> str | None:
 
 
 def get_translation_choices(word: str) -> list | None:
-    translation: str = translate_word(word)
+    translation: str = get_word_translation(word)
     cursor.execute(f"""
         SELECT word_rus
         FROM words w
