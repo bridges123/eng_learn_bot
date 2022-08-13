@@ -39,7 +39,14 @@ admin_kb.add(settings, support)
 words_choice_kb = ReplyKeyboardMarkup(resize_keyboard=True)
 all_words = KeyboardButton('Все слова')
 add_word = KeyboardButton('Добавить слово')
-change_word = KeyboardButton('Изменить слово')
+change_word = KeyboardButton('Изменить/Удалить')
 back = KeyboardButton('Назад')
 words_choice_kb.add(all_words, add_word)
 words_choice_kb.add(change_word, back)
+
+
+""" Клавиатура выбора действия со словом """
+edit_choice_kb = ReplyKeyboardMarkup(resize_keyboard=True)
+edit_translate_button = KeyboardButton('Изменить перевод')
+delete_word_button = KeyboardButton('Удалить слово')
+edit_choice_kb.add(edit_translate_button, delete_word_button)

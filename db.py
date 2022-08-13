@@ -1,3 +1,4 @@
+import logging
 import sqlite3
 
 con = sqlite3.connect("base.db")
@@ -37,10 +38,15 @@ def get_words() -> list:
     return words
 
 
-def add_word(word_eng: str, word_rus: str, word_image: str) -> None:
-    cursor.execute("INSERT INTO words (word_eng, word_rus, word_image) VALUES (?, ?, ?)",
-                   (word_eng, word_rus, word_image))
-    con.commit()
+def add_word(word_eng: str, word_rus: str, word_image: str) -> bool:
+    try:
+        cursor.execute("INSERT INTO words (word_eng, word_rus, word_image) VALUES (?, ?, ?)",
+                       (word_eng, word_rus, word_image))
+        con.commit()
+        return True
+    except Exception as ex:
+        logging.error(f'Error add word in base {ex}')
+        return False
 
 
 def get_word_translation(word_eng: str) -> str | None:
@@ -87,18 +93,57 @@ def get_translation_choices(word: str) -> list | None:
         return None
 
 
-def update_total_words_count(telegram_id: int) -> None:
-    cursor.execute("UPDATE users SET words_total = words_total + 1 WHERE telegram_id = ?", (telegram_id,))
-    con.commit()
+def update_total_words_count(telegram_id: int) -> bool:
+    try:
+        cursor.execute("UPDATE users SET words_total = words_total + 1 WHERE telegram_id = ?", (telegram_id,))
+        con.commit()
+        return True
+    except Exception as ex:
+        logging.error(f'Error update total count in base {ex}')
+        return False
 
 
-def update_translated_words_count(telegram_id: int) -> None:
-    cursor.execute("UPDATE users SET words_translated = words_translated + 1 WHERE telegram_id = ?", (telegram_id,))
-    con.commit()
+def update_translated_words_count(telegram_id: int) -> bool:
+    try:
+        cursor.execute("UPDATE users SET words_translated = words_translated + 1 WHERE telegram_id = ?", (telegram_id,))
+        con.commit()
+        return True
+    except Exception as ex:
+        logging.error(f'Error update translated count in base {ex}')
+        return False
+
+
+def edit_word_translation(word_eng: str, word_rus: str, word_image: str) -> bool:
+    try:
+        cursor.execute("UPDATE words SET word_rus = ?, word_image = ? WHERE word_eng = ?", (word_rus, word_image, word_eng))
+        con.commit()
+        return True
+    except Exception as ex:
+        logging.error(f'Error edit translation in base {ex}')
+        return False
+
+
+def delete_word(word: str) -> bool:
+    try:
+        cursor.execute("DELETE FROM words WHERE word_eng = ?", (word,))
+        con.commit()
+        return True
+    except Exception as ex:
+        logging.error(f'Error delete word from base {ex}')
+        return False
 
 
 def get_word_id(word: str) -> int | None:
     cursor.execute("SELECT id FROM words WHERE word_eng = ?", (word,))
+    word_id = cursor.fetchone()
+    if word_id:
+        return word_id[0]
+    else:
+        return None
+
+
+def get_check_word(word: str) -> str | None:
+    cursor.execute("SELECT word_eng FROM words WHERE word_eng = ?", (word,))
     word_id = cursor.fetchone()
     if word_id:
         return word_id[0]
@@ -116,10 +161,15 @@ def add_word_to_guessed(telegram_id: int, word: str) -> bool:
         return True
 
 
-def add_user(telegram_id: int) -> None:
-    cursor.execute("INSERT INTO users (telegram_id, words_total, words_translated, delay) VALUES (?, ?, ?, ?)",
-                   (telegram_id, 0, 0, None))
-    con.commit()
+def add_user(telegram_id: int) -> bool:
+    try:
+        cursor.execute("INSERT INTO users (telegram_id, words_total, words_translated, delay) VALUES (?, ?, ?, ?)",
+                       (telegram_id, 0, 0, None))
+        con.commit()
+        return True
+    except Exception as ex:
+        logging.error(f'Error add user in base {ex}')
+        return False
 
 
 def get_stats(telegram_id: int) -> tuple:

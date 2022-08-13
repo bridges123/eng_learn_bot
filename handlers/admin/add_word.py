@@ -46,7 +46,7 @@ async def add_word_is_translate(message: Message, state: FSMContext):
         case _:
             if answer in ('/apanel', 'start'):
                 await message.answer('Admin panel:', reply_markup=admin_kb)
-    await state.finish()
+                await state.finish()
 
 
 @dp.message_handler(content_types=['text'], state=AddWord.word_rus, is_admin=True)
@@ -69,8 +69,11 @@ async def add_word_confirm(message: Message, state: FSMContext):
             word = data.get('word')
             translation = data.get('translation')
             if word and translation:
-                add_word(word, translation, '')  # add image path
-                await message.answer('Слово успешно добавлено.', reply_markup=words_choice_kb)
+                response: bool = add_word(word, translation, '')  # add image path
+                if response:
+                    await message.answer('Слово успешно добавлено.', reply_markup=words_choice_kb)
+                else:
+                    await message.answer(f'Ошибка! Не удалось добавить слово.', reply_markup=words_choice_kb)
             else:
                 logging.error(f'Error adding word: None values. {data}')
                 await message.answer('Ошибка добавления нового слова!', reply_markup=words_choice_kb)

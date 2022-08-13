@@ -30,14 +30,17 @@ async def word_callback_know(call: CallbackQuery, callback_data: dict, state: FS
             msg = f'Молодец! Ты угадал: <b>{word} - {translation}</b>'
             # Добавляем угаданное слово в фильтр-таблицу и инкременируем счётчики
             add_word_to_guessed(telegram_id, word)
-            update_translated_words_count(telegram_id)
-            update_total_words_count(telegram_id)
+            response1: bool = update_translated_words_count(telegram_id)
+            response2: bool = update_total_words_count(telegram_id)
+            if not all(response1, response2):
+                msg = 'Ошибка! Не удалось записать результат!'
         case 'no':
             msg = f'Неверно! Запоминай новое слово: <b>{word} - {translation}</b>'
-            update_total_words_count(telegram_id)
+            response: bool = update_total_words_count(telegram_id)
+            if not response:
+                msg = 'Ошибка! Не удалось записать результат!'
         case _:
-            msg = 'Ошибка!'
+            msg = 'Ошибка с получением результата!'
             logging.error(f'Error with answer in callback_data: {callback_data}')
-    # pass in bd ???
     await state.finish()
     await call.message.edit_text(msg)

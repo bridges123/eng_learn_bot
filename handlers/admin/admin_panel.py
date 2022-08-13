@@ -7,6 +7,7 @@ from loader import dp
 from keyboards.reply import admin_kb, words_choice_kb
 from .get_words import get_all_words
 from .add_word import add_word_start
+from .edit_word import edit_word_start
 
 
 @dp.message_handler(commands=['start', 'apanel'], state='*', is_admin=True)
@@ -23,8 +24,8 @@ async def apanel_commands(message: Message):
             await message.answer('Выберите действие:', reply_markup=words_choice_kb)
         case 'Добавить слово':
             await add_word_start(message)
-        case 'Изменить слово':
-            pass
+        case 'Изменить/Удалить':
+            await edit_word_start(message)
         case 'Назад':
             await admin_panel(message)
         case 'Статистика пользователя':
@@ -34,5 +35,5 @@ async def apanel_commands(message: Message):
         case 'Поддержка':
             pass
         case _:
-            logging.error(f'Error admin panel command is not in list: {message}')
-            await message.answer('Ошибка админ-панели!')
+            # logging.error(f'Error admin panel command is not in list: {message}')
+            await message.answer('Такой команды нет. Попробуйте /apanel')

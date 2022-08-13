@@ -10,10 +10,9 @@ class AddWord(StatesGroup):
 
 class EditWord(StatesGroup):
     word_eng = State()
-    edited_word_eng = State()
-    edited_word_rus = State()
-    is_translate = State()
-    confirm = State()
+    edit_choice = State()
+    edited_translation = State()
+    edit_confirm = State()
 
 
 class TranslateWord(StatesGroup):
