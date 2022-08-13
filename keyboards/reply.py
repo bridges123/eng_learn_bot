@@ -50,3 +50,10 @@ edit_choice_kb = ReplyKeyboardMarkup(resize_keyboard=True)
 edit_translate_button = KeyboardButton('Изменить перевод')
 delete_word_button = KeyboardButton('Удалить слово')
 edit_choice_kb.add(edit_translate_button, delete_word_button)
+
+
+""" Клавиатура выбора режима поиска пользователя """
+search_mode_kb = ReplyKeyboardMarkup(resize_keyboard=True)
+telegram_id_mode = KeyboardButton('Telegram ID')
+username_mode = KeyboardButton('Username')
+search_mode_kb.add(telegram_id_mode, username_mode)

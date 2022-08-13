@@ -3,14 +3,14 @@ from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
 from aiogram.dispatcher import FSMContext
 
 from loader import dp
-from db import get_stats
+from db import get_stats_by_telegram_id
 from states.words import TranslateWord
 from keyboards.reply import menu_kb
 from services.translation import translate_word
 
 
 async def menu_stats(message: Message):
-    stats: tuple = get_stats(message.from_user.id)
+    stats: tuple = get_stats_by_telegram_id(message.from_user.id)
     if not stats:
         logging.error(f'Error get stats: {message.from_user.id}, {stats}')
         await message.answer('Ошибка получения статистики!')

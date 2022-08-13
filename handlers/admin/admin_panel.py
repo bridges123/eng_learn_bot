@@ -8,6 +8,7 @@ from keyboards.reply import admin_kb, words_choice_kb
 from .get_words import get_all_words
 from .add_word import add_word_start
 from .edit_word import edit_word_start
+from .user_stats import get_stats
 
 
 @dp.message_handler(commands=['start', 'apanel'], state='*', is_admin=True)
@@ -29,7 +30,7 @@ async def apanel_commands(message: Message):
         case 'Назад':
             await admin_panel(message)
         case 'Статистика пользователя':
-            pass
+            await get_stats(message)
         case 'Настройки':
             pass
         case 'Поддержка':

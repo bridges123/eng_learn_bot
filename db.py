@@ -7,6 +7,7 @@ cursor = con.cursor()
 cursor.execute("""
     CREATE TABLE IF NOT EXISTS users (
         telegram_id BIGINT PRIMARY KEY,
+        username VARCHAR,
         words_total INTEGER,
         words_translated INTEGER,
         delay INTEGER
@@ -24,8 +25,8 @@ cursor.execute("""
 
 cursor.execute("""
     CREATE TABLE IF NOT EXISTS guessed_words (
-        user_telegram_id BIGINT REFERENCES users(telegram_id),
-        word_id INTEGER REFERENCES words(id)
+        user_telegram_id BIGINT REFERENCES users(telegram_id) ON DELETE CASCADE,
+        word_id INTEGER REFERENCES words(id) ON DELETE CASCADE
     )
 """)
 
@@ -161,10 +162,12 @@ def add_word_to_guessed(telegram_id: int, word: str) -> bool:
         return True
 
 
-def add_user(telegram_id: int) -> bool:
+def add_user(telegram_id: int, username: str) -> bool:
     try:
-        cursor.execute("INSERT INTO users (telegram_id, words_total, words_translated, delay) VALUES (?, ?, ?, ?)",
-                       (telegram_id, 0, 0, None))
+        cursor.execute("INSERT INTO users "
+                       "(telegram_id, username, words_total, words_translated, delay) "
+                       "VALUES (?, ?, ?, ?)",
+                       (telegram_id, username, 0, 0, None))
         con.commit()
         return True
     except Exception as ex:
@@ -172,6 +175,11 @@ def add_user(telegram_id: int) -> bool:
         return False
 
 
-def get_stats(telegram_id: int) -> tuple:
+def get_stats_by_telegram_id(telegram_id: int | str) -> tuple | None:
     cursor.execute("SELECT words_total, words_translated, delay FROM users WHERE telegram_id = ?", (telegram_id,))
+    return cursor.fetchone()
+
+
+def get_stats_by_username(username: str) -> tuple | None:
+    cursor.execute("SELECT words_total, words_translated, delay FROM users WHERE username = ?", (username,))
     return cursor.fetchone()

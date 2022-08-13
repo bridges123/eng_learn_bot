@@ -53,7 +53,7 @@ async def edit_delete_choice(message: Message, state: FSMContext):
                     await message.answer(f'Ошибка! Не удалось удалить слово.', reply_markup=words_choice_kb)
                 await state.finish()
         case _:
-            if answer in ('/apanel', 'start'):
+            if choice in ('/apanel', 'start'):
                 await message.answer('Admin panel:', reply_markup=admin_kb)
                 await state.finish()
 
