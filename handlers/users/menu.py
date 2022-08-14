@@ -39,7 +39,7 @@ async def repetion_translate_word(message: Message, state: FSMContext):
                 await dp.bot.delete_message(message.from_user.id, train_message_id + 1)
             except Exception as ex:
                 logging.error(f'Exception deleting train message: {ex}, {message}')
-        await state.finish()
+        await UserMenu.active.set()
         await menu_stats(message)
     else:
         await message.answer('Ты уже запросил одно слово!')

@@ -5,6 +5,7 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.dispatcher import FSMContext
 
 from loader import dp
+from states.words import UserMenu
 from db import add_word_to_guessed, get_word_translation, update_total_words_count, update_translated_words_count
 from keyboards.callback import word_callback
 
@@ -42,5 +43,5 @@ async def word_callback_know(call: CallbackQuery, callback_data: dict, state: FS
         case _:
             msg = 'Ошибка с получением результата!'
             logging.error(f'Error with answer in callback_data: {callback_data}')
-    await state.finish()
-    await call.message.edit_text(msg)
+    await UserMenu.active.set()
+    await call.message.edit_caption(msg)

@@ -1,12 +1,13 @@
 import translators as ts
 import logging
 
-from aiogram.types import Message
+from aiogram.types import Message, InputFile
 from aiogram.dispatcher import FSMContext
 
 from db import get_random_word, get_translation_choices
 from keyboards.inline import translate_choices_kb
 from states.words import TranslateWord
+from .image_word import create_new_image
 
 
 async def translate_word(message: Message, state: FSMContext):
@@ -22,7 +23,8 @@ async def translate_word(message: Message, state: FSMContext):
             logging.error(f'Error no translate choices: {translate_choices}, {word}')
             await message.answer('Ошибка! Ты перевел уже все слова!')
         else:
-            await message.answer(f'Знаешь слово <b>{word}</b>?', reply_markup=translate_choices_kb(word, translate_choices))
+            image: str = create_new_image(word)
+            await message.answer_photo(InputFile(image), reply_markup=translate_choices_kb(word, translate_choices))
             await TranslateWord.active.set()
             await state.update_data(message_id=message.message_id)
 
