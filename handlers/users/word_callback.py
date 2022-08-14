@@ -32,7 +32,7 @@ async def word_callback_know(call: CallbackQuery, callback_data: dict, state: FS
             add_word_to_guessed(telegram_id, word)
             response1: bool = update_translated_words_count(telegram_id)
             response2: bool = update_total_words_count(telegram_id)
-            if not all(response1, response2):
+            if not all([response1, response2]):
                 msg = 'Ошибка! Не удалось записать результат!'
         case 'no':
             msg = f'Неверно! Запоминай новое слово: <b>{word} - {translation}</b>'

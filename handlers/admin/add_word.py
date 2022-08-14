@@ -7,8 +7,9 @@ from aiogram.types import ReplyKeyboardRemove
 
 from loader import dp
 from states.words import AddWord
+from states.admin import AdminPanel
 from keyboards.reply import add_word_kb, confirm_kb, words_choice_kb, admin_kb
-from keyboards.reply import add_button, own_button, confirm_button, cancel_button
+from keyboards.reply import add_button, own_button, confirm_button, cancel_button, back
 from services.translation import google_translate_word
 from db import add_word
 
@@ -43,10 +44,13 @@ async def add_word_is_translate(message: Message, state: FSMContext):
         case own_button.text:
             await message.answer('Введите свой вариант перевода:', reply_markup=ReplyKeyboardRemove())
             await AddWord.word_rus.set()
+        case back.text:
+            await message.answer('Выберите действие:', reply_markup=words_choice_kb)
+            await AdminPanel.active.set()
         case _:
             if answer in ('/apanel', 'start'):
                 await message.answer('Admin panel:', reply_markup=admin_kb)
-                await state.finish()
+                await AdminPanel.active.set()
 
 
 @dp.message_handler(content_types=['text'], state=AddWord.word_rus, is_admin=True)
@@ -82,4 +86,4 @@ async def add_word_confirm(message: Message, state: FSMContext):
         case _:
             logging.error(f'Error confirm new word admin: {answer}')
             await message.answer('Ошибка с подтверждением!', reply_markup=words_choice_kb)
-    await state.finish()
+    await AdminPanel.active.set()

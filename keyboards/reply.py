@@ -1,13 +1,6 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 
-""" Клавиатура добавления нового слова """
-add_word_kb = ReplyKeyboardMarkup(resize_keyboard=True)
-add_button = KeyboardButton('Добавить')
-own_button = KeyboardButton('Свой перевод')
-add_word_kb.add(add_button, own_button)
-
-
 """ Клавиатура подтверждения """
 confirm_kb = ReplyKeyboardMarkup(resize_keyboard=True)
 confirm_button = KeyboardButton('Подтвердить')
@@ -45,6 +38,14 @@ words_choice_kb.add(all_words, add_word)
 words_choice_kb.add(change_word, back)
 
 
+""" Клавиатура добавления нового слова """
+add_word_kb = ReplyKeyboardMarkup(resize_keyboard=True)
+add_button = KeyboardButton('Добавить')
+own_button = KeyboardButton('Свой перевод')
+add_word_kb.add(add_button, own_button)
+add_word_kb.add(back)
+
+
 """ Клавиатура выбора действия со словом """
 edit_choice_kb = ReplyKeyboardMarkup(resize_keyboard=True)
 edit_translate_button = KeyboardButton('Изменить перевод')
@@ -57,3 +58,4 @@ search_mode_kb = ReplyKeyboardMarkup(resize_keyboard=True)
 telegram_id_mode = KeyboardButton('Telegram ID')
 username_mode = KeyboardButton('Username')
 search_mode_kb.add(telegram_id_mode, username_mode)
+search_mode_kb.add(back)

@@ -15,5 +15,9 @@ class EditWord(StatesGroup):
     edit_confirm = State()
 
 
+class UserMenu(StatesGroup):
+    active = State()
+
+
 class TranslateWord(StatesGroup):
     active = State()

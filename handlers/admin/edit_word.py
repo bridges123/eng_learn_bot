@@ -7,6 +7,7 @@ from aiogram.types import ReplyKeyboardRemove
 
 from loader import dp
 from states.words import EditWord
+from states.admin import AdminPanel
 from keyboards.reply import words_choice_kb, edit_choice_kb, confirm_kb
 from keyboards.reply import edit_translate_button, delete_word_button, confirm_button, cancel_button
 from db import get_check_word, edit_word_translation, delete_word
@@ -25,7 +26,7 @@ async def edit_word_eng(message: Message, state: FSMContext):
     if not checked_word:
         logging.error(f'Error not find gived word {checked_word}')
         await message.answer('Ошибка! Слово не было найдено.', reply_markup=words_choice_kb)
-        await state.finish()
+        await AdminPanel.active.set()
     else:
         await state.update_data(word=checked_word)
         await message.answer(f'Слово <b>{checked_word}</b> найдено. Выберите действие:', reply_markup=edit_choice_kb)
@@ -44,18 +45,18 @@ async def edit_delete_choice(message: Message, state: FSMContext):
             word: str | None = data.get('word')
             if not word:
                 logging.error(f'Error get word in choice func {data}, {choice}')
-                await message.answer('Ошибка получения слова!')
+                await message.answer('Ошибка получения слова!', reply_markup=words_choice_kb)
             else:
                 response: bool = delete_word(word)
                 if response:
                     await message.answer(f'Слово <b>{word}</b> удалено.', reply_markup=words_choice_kb)
                 else:
                     await message.answer(f'Ошибка! Не удалось удалить слово.', reply_markup=words_choice_kb)
-                await state.finish()
+            await AdminPanel.active.set()
         case _:
             if choice in ('/apanel', 'start'):
                 await message.answer('Admin panel:', reply_markup=admin_kb)
-                await state.finish()
+                await AdminPanel.active.set()
 
 
 @dp.message_handler(content_types=['text'], state=EditWord.edited_translation, is_admin=True)
@@ -92,4 +93,4 @@ async def edit_word_confirm(message: Message, state: FSMContext):
         case _:
             logging.error(f'Error confirm new word admin: {answer}')
             await message.answer('Ошибка с подтверждением!', reply_markup=words_choice_kb)
-    await state.finish()
+    await AdminPanel.active.set()

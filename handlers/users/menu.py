@@ -4,8 +4,9 @@ from aiogram.dispatcher import FSMContext
 
 from loader import dp
 from db import get_stats_by_telegram_id
-from states.words import TranslateWord
-from keyboards.reply import menu_kb
+from states.words import TranslateWord, UserMenu
+from states.admin import AdminPanel
+from keyboards.reply import menu_kb, admin_kb
 from services.translation import translate_word
 
 
@@ -44,26 +45,28 @@ async def repetion_translate_word(message: Message, state: FSMContext):
         await message.answer('Ты уже запросил одно слово!')
 
 
+@dp.message_handler(commands=['apanel'], state='*')
+async def get_apanel(message: Message):
+    await message.answer('Admin panel:', reply_markup=admin_kb)
+    await AdminPanel.active.set()
+
+
 @dp.message_handler(commands=['start', 'menu'], state='*')
 async def get_menu(message: Message):
+    await UserMenu.active.set()
     await menu_stats(message)
 
 
-@dp.message_handler(regexp='Тренировка', state='*')
-async def train_translate_command(message: Message, state: FSMContext):
-    await translate_word(message, state)
-
-
-@dp.message_handler(regexp='Статистика', state='*')
-async def stats_command(message: Message):
-    await menu_stats(message)
-
-
-@dp.message_handler(regexp='Задержка', state='*')
-async def delay_command(message: Message):
-    pass
-
-
-@dp.message_handler(regexp='Рассылка', state='*')
-async def distribution_command(message: Message):
-    pass
+@dp.message_handler(content_types=['text'], state=UserMenu.active)
+async def menu_commands(message: Message, state: FSMContext):
+    match message.text:
+        case 'Тренировка':
+            await translate_word(message, state)
+        case 'Статистика':
+            await menu_stats(message)
+        case 'Задержка':
+            pass
+        case 'Рассылка':
+            pass
+        case _:
+            await message.answer('Такой команды нет. Попробуйте /menu')

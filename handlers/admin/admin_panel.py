@@ -5,18 +5,28 @@ from aiogram.dispatcher import FSMContext
 
 from loader import dp
 from keyboards.reply import admin_kb, words_choice_kb
+from states.admin import AdminPanel
+from states.words import UserMenu
+from ..users.menu import menu_stats
 from .get_words import get_all_words
 from .add_word import add_word_start
 from .edit_word import edit_word_start
 from .user_stats import get_stats
 
 
-@dp.message_handler(commands=['start', 'apanel'], state='*', is_admin=True)
+@dp.message_handler(commands=['apanel'], state='*', is_admin=True)
 async def admin_panel(message: Message):
     await message.answer('Admin panel:', reply_markup=admin_kb)
+    await AdminPanel.active.set()
 
 
-@dp.message_handler(state='*', is_admin=True)
+@dp.message_handler(commands=['start', 'menu'], state='*', is_admin=True)
+async def user_menu(message: Message):
+    await UserMenu.active.set()
+    await menu_stats(message)
+
+
+@dp.message_handler(state=AdminPanel.active, is_admin=True)
 async def apanel_commands(message: Message):
     match message.text:
         case 'Все слова':
@@ -36,5 +46,4 @@ async def apanel_commands(message: Message):
         case 'Поддержка':
             pass
         case _:
-            # logging.error(f'Error admin panel command is not in list: {message}')
             await message.answer('Такой команды нет. Попробуйте /apanel')

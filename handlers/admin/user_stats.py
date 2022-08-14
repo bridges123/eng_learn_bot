@@ -6,9 +6,9 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import ReplyKeyboardRemove
 
 from loader import dp
-from states.admin import UserStats
+from states.admin import UserStats, AdminPanel
 from keyboards.reply import search_mode_kb, admin_kb
-from keyboards.reply import telegram_id_mode, username_mode
+from keyboards.reply import telegram_id_mode, username_mode, back
 from db import get_stats_by_telegram_id, get_stats_by_username
 
 
@@ -30,18 +30,21 @@ async def search_choose_mode(message: Message, state: FSMContext):
             await state.update_data(mode='username')
             await message.answer('Введите Username пользователя:', reply_markup=ReplyKeyboardRemove())
             await UserStats.username.set()
+        case back.text:
+            await AdminPanel.active.set()
+            await message.answer('Admin panel:', reply_markup=admin_kb)
         case _:
             if mode in ('/apanel', 'start'):
                 await message.answer('Admin panel:', reply_markup=admin_kb)
-                await state.finish()
+                await AdminPanel.active.set()
 
 
 @dp.message_handler(state=UserStats.telegram_id, is_admin=True)
-async def stats_by_telegram_id(message: Message, state: FSMContext):
+async def stats_by_telegram_id(message: Message):
     telegram_id: str = message.text
     stats: str | None = get_stats_by_telegram_id(telegram_id)
     if not stats:
-        await message.answer('Пользователь с таким ID не был найден.', reply_markup=admin_kbdfs)
+        await message.answer('Пользователь с таким ID не был найден.', reply_markup=admin_kb)
     else:
         words_total, words_translated, delay = stats
         await message.answer(f'Статистика <b>{telegram_id}</b>:\n'
@@ -49,11 +52,11 @@ async def stats_by_telegram_id(message: Message, state: FSMContext):
                              f'Переведено слов: {words_translated}\n'
                              f'Задержка на рассылку: {delay}',
                              reply_markup=admin_kb)
-    await state.finish()
+    await AdminPanel.active.set()
 
 
 @dp.message_handler(state=UserStats.username, is_admin=True)
-async def stats_by_username(message: Message, state: FSMContext):
+async def stats_by_username(message: Message):
     username: str = message.text
     stats: str | None = get_stats_by_username(username)
     if not stats:
@@ -65,4 +68,4 @@ async def stats_by_username(message: Message, state: FSMContext):
                              f'Переведено слов: {words_translated}\n'
                              f'Задержка на рассылку: {delay}',
                              reply_markup=admin_kb)
-    await state.finish()
+    await AdminPanel.active.set()
