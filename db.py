@@ -8,9 +8,11 @@ cursor.execute("""
     CREATE TABLE IF NOT EXISTS users (
         telegram_id BIGINT PRIMARY KEY,
         username VARCHAR,
-        words_total INTEGER,
-        words_translated INTEGER,
-        delay INTEGER
+        words_total INTEGER DEFAULT 0,
+        words_translated INTEGER DEFAULT 0,
+        delay INTEGER DEFAULT 60,
+        distribution BOOLEAN DEFAULT 0,
+        last_distrib DATETIME
     )
 """)
 
@@ -165,9 +167,9 @@ def add_word_to_guessed(telegram_id: int, word: str) -> bool:
 def add_user(telegram_id: int, username: str) -> bool:
     try:
         cursor.execute("INSERT INTO users "
-                       "(telegram_id, username, words_total, words_translated, delay) "
-                       "VALUES (?, ?, ?, ?)",
-                       (telegram_id, username, 0, 0, None))
+                       "(telegram_id, username) "
+                       "VALUES (?, ?)",
+                       (telegram_id, username))
         con.commit()
         return True
     except Exception as ex:
@@ -202,3 +204,20 @@ def set_new_delay(telegram_id: int, new_delay: int) -> bool:
     except Exception as ex:
         logging.error(f'Error update delay: {ex}, {telegram_id}, {new_delay}')
         return False
+
+
+def change_distrib(telegram_id: int) -> tuple:
+    try:
+        cursor.execute("SELECT distribution FROM users WHERE telegram_id = ?", (telegram_id,))
+        distrib = cursor.fetchone()
+        if distrib:
+            distrib: bool = distrib[0]
+            cursor.execute(f"UPDATE users SET distribution = ? WHERE telegram_id = ?",
+                           (not distrib, telegram_id))
+            con.commit()
+            return True, not distrib
+        else:
+            return False, False
+    except Exception as ex:
+        logging.error(f'Error change distrib: {ex}, {telegram_id}')
+        return False, False

@@ -9,6 +9,7 @@ from keyboards.reply import admin_kb, menu_kb
 from services.translation import translate_word
 from services.menu import menu_stats
 from .delay import set_delay
+from .distribution import on_off_distrib
 
 
 # отлавливание повторного запроса слов
@@ -54,7 +55,7 @@ async def menu_commands(message: Message, state: FSMContext):
         case 'Задержка':
             await set_delay(message)
         case 'Рассылка':
-            pass
+            await on_off_distrib(message)
         case _:
             await message.answer('Такой команды нет. Попробуйте /menu')
 

@@ -1,6 +1,6 @@
 import asyncio
 
-from loader import dp
+from loader import dp, logger
 from handlers.admin import admin_panel, add_word, get_words
 from handlers.users import menu, word_callback
 import db
@@ -13,7 +13,7 @@ async def main():
     finally:
         await dp.storage.close()
         await dp.storage.wait_closed()
-        await bot.session.close()
+        await dp.bot.session.close()
         db.con.close()
 
 
