@@ -183,3 +183,22 @@ def get_stats_by_telegram_id(telegram_id: int | str) -> tuple | None:
 def get_stats_by_username(username: str) -> tuple | None:
     cursor.execute("SELECT words_total, words_translated, delay FROM users WHERE username = ?", (username,))
     return cursor.fetchone()
+
+
+def get_current_delay(telegram_id: int) -> int | None:
+    cursor.execute("SELECT delay FROM users WHERE telegram_id = ?", (telegram_id,))
+    cur_delay = cursor.fetchone()
+    if cur_delay:
+        return cur_delay[0]
+    else:
+        return None
+
+
+def set_new_delay(telegram_id: int, new_delay: int) -> bool:
+    try:
+        cursor.execute("UPDATE users SET delay = ? WHERE telegram_id = ?", (new_delay, telegram_id))
+        con.commit()
+        return True
+    except Exception as ex:
+        logging.error(f'Error update delay: {ex}, {telegram_id}, {new_delay}')
+        return False

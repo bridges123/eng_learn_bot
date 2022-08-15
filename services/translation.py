@@ -6,7 +6,7 @@ from aiogram.dispatcher import FSMContext
 
 from db import get_random_word, get_translation_choices
 from keyboards.inline import translate_choices_kb
-from states.words import TranslateWord
+from states.user import TranslateWord
 from .image_word import create_new_image
 
 
@@ -33,6 +33,6 @@ def google_translate_word(word: str) -> str:
     try:
         translation: str = ts.google(word, from_language='en', to_language='ru')
     except Exception as ex:
-        translation: str = 'отсутствует'
         logging.error(f'Error google translate: {ex}')
+        translation: str = 'отсутствует'
     return translation

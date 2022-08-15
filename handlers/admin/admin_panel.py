@@ -6,8 +6,8 @@ from aiogram.dispatcher import FSMContext
 from loader import dp
 from keyboards.reply import admin_kb, words_choice_kb
 from states.admin import AdminPanel
-from states.words import UserMenu
-from ..users.menu import menu_stats
+from states.user import UserMenu
+from services.menu import menu_stats
 from .get_words import get_all_words
 from .add_word import add_word_start
 from .edit_word import edit_word_start

@@ -1,27 +1,14 @@
 import logging
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
+from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
 
 from loader import dp
-from db import get_stats_by_telegram_id
-from states.words import TranslateWord, UserMenu
+from states.user import TranslateWord, UserMenu
 from states.admin import AdminPanel
-from keyboards.reply import menu_kb, admin_kb
+from keyboards.reply import admin_kb, menu_kb
 from services.translation import translate_word
-
-
-async def menu_stats(message: Message):
-    stats: tuple = get_stats_by_telegram_id(message.from_user.id)
-    if not stats:
-        logging.error(f'Error get stats: {message.from_user.id}, {stats}')
-        await message.answer('Ошибка получения статистики!')
-    else:
-        words_total, words_translated, delay = stats
-        await message.answer('Ваша статистика:\n'
-                             f'Всего слов: {words_total}\n'
-                             f'Переведено слов: {words_translated}\n'
-                             f'Задержка на рассылку: {delay}',
-                             reply_markup=menu_kb)
+from services.menu import menu_stats
+from .delay import set_delay
 
 
 # отлавливание повторного запроса слов
@@ -65,8 +52,14 @@ async def menu_commands(message: Message, state: FSMContext):
         case 'Статистика':
             await menu_stats(message)
         case 'Задержка':
-            pass
+            await set_delay(message)
         case 'Рассылка':
             pass
         case _:
             await message.answer('Такой команды нет. Попробуйте /menu')
+
+
+@dp.message_handler(content_types=['text'], state='*')
+async def other_text(message: Message):
+    await message.answer('Такой команды нет!', reply_markup=menu_kb)
+    await UserMenu.active.set()

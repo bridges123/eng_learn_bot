@@ -59,3 +59,14 @@ telegram_id_mode = KeyboardButton('Telegram ID')
 username_mode = KeyboardButton('Username')
 search_mode_kb.add(telegram_id_mode, username_mode)
 search_mode_kb.add(back)
+
+
+""" Клавиатура 'Назад' """
+back_kb = ReplyKeyboardMarkup(resize_keyboard=True)
+back_kb.add(back)
+
+
+""" Клавиатура выбора изменения задержки """
+delay_choice_kb = ReplyKeyboardMarkup(resize_keyboard=True)
+change_button = KeyboardButton('Изменить')
+delay_choice_kb.add(change_button, back)

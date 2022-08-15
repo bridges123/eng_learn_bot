@@ -6,7 +6,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import ReplyKeyboardRemove
 
 from loader import dp
-from states.words import EditWord
+from states.user import EditWord
 from states.admin import AdminPanel
 from keyboards.reply import words_choice_kb, edit_choice_kb, confirm_kb
 from keyboards.reply import edit_translate_button, delete_word_button, confirm_button, cancel_button

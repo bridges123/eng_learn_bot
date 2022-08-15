@@ -5,7 +5,7 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.dispatcher import FSMContext
 
 from loader import dp
-from states.words import UserMenu
+from states.user import UserMenu
 from db import add_word_to_guessed, get_word_translation, update_total_words_count, update_translated_words_count
 from keyboards.callback import word_callback
 
@@ -14,7 +14,7 @@ from keyboards.callback import word_callback
 @dp.callback_query_handler(word_callback.filter(), state='*')
 async def word_callback_know(call: CallbackQuery, callback_data: dict, state: FSMContext):
     """ Обработка callback's от word_keyboard """
-    await call.answer(cache_time=60)
+    # await call.answer(cache_time=60)
     word: str | None = callback_data.get('word')
     if not word:
         logging.error(f'Error get word of callback_data: {word}, {callback_data}')
