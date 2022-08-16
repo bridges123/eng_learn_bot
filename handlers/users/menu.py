@@ -24,7 +24,7 @@ async def repetion_translate_word(message: Message, state: FSMContext):
             await message.answer('Ошибка закрытия режима тренировки перевода!')
         else:
             try:
-                await dp.bot.delete_message(message.from_user.id, train_message_id + 1)
+                await dp.bot.delete_message(message.from_user.id, train_message_id)
             except Exception as ex:
                 logging.error(f'Exception deleting train message: {ex}, {message}')
         await UserMenu.active.set()
@@ -49,7 +49,7 @@ async def get_menu(message: Message):
 async def menu_commands(message: Message, state: FSMContext):
     match message.text:
         case 'Тренировка':
-            await translate_word(message, state)
+            await translate_word(message.from_user.id)
         case 'Статистика':
             await menu_stats(message)
         case 'Задержка':

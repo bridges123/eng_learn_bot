@@ -1,3 +1,4 @@
+import datetime
 import logging
 import sqlite3
 
@@ -221,3 +222,24 @@ def change_distrib(telegram_id: int) -> tuple:
     except Exception as ex:
         logging.error(f'Error change distrib: {ex}, {telegram_id}')
         return False, False
+
+
+def get_users_distribution() -> list | None:
+    try:
+        cursor.execute("SELECT telegram_id, delay, distribution, last_distrib FROM users")
+        users = cursor.fetchall()
+        if len(users):
+            return users
+        else:
+            return None
+    except Exception as ex:
+        logging.error(f'Error get all users distrib: {ex}')
+        return None
+
+
+def update_last_distrib(telegram_id: int, new_distrib: datetime.datetime) -> None:
+    try:
+        cursor.execute("UPDATE users SET last_distrib = ? WHERE telegram_id = ?", (new_distrib, telegram_id))
+        con.commit()
+    except Exception as ex:
+        logging.error(f'Error update last distrib in base: {ex}, {telegram_id}')

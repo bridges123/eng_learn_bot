@@ -43,12 +43,12 @@ async def set_delay_handler(message: Message):
         await menu_stats(message)
     elif message.text.isnumeric():
         new_delay: int = int(message.text)
-        if 1 <= new_delay <= 4320:
+        if 20 <= new_delay <= 4320:
             response: bool = set_new_delay(message.from_user.id, new_delay)
             if response:
                 await message.answer(f'Задержка <b>{new_delay}</b> успешно установлена.', reply_markup=menu_kb)
                 await UserMenu.active.set()
         else:
-            await message.answer('Введите корректную задержку (1-4320 мин):', reply_markup=back_kb)
+            await message.answer('Введите корректную задержку (20-4320 мин):', reply_markup=back_kb)
     else:
-        await message.answer('Введите корректную задержку (1-4320 мин):', reply_markup=back_kb)
+        await message.answer('Введите корректную задержку (20-4320 мин):', reply_markup=back_kb)

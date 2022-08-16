@@ -3,10 +3,11 @@ import asyncio
 from loader import dp, logger
 from handlers.admin import admin_panel, add_word, get_words
 from handlers.users import menu, word_callback
-import db
+from db import con
+from services.distribution import distribution_cycle
 
 
-async def main():
+async def bot_start():
     # start
     try:
         await dp.start_polling()
@@ -14,7 +15,13 @@ async def main():
         await dp.storage.close()
         await dp.storage.wait_closed()
         await dp.bot.session.close()
-        db.con.close()
+        con.close()
+
+
+async def main():
+    bot_task = asyncio.create_task(bot_start())
+    distribution_task = asyncio.create_task(distribution_cycle())
+    await asyncio.gather(bot_task, distribution_task)
 
 
 if __name__ == '__main__':
