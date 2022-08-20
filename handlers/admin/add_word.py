@@ -11,7 +11,7 @@ from states.admin import AdminPanel
 from keyboards.reply import add_word_kb, confirm_kb, words_choice_kb, admin_kb
 from keyboards.reply import add_button, own_button, confirm_button, cancel_button, back
 from services.translation import google_translate_word
-from db import add_word
+from db.words import add_word
 
 
 @dp.message_handler(commands=['add_word'], state='*', is_admin=True)

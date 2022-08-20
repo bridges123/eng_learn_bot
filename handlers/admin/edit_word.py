@@ -10,7 +10,7 @@ from states.user import EditWord
 from states.admin import AdminPanel
 from keyboards.reply import words_choice_kb, edit_choice_kb, confirm_kb
 from keyboards.reply import edit_translate_button, delete_word_button, confirm_button, cancel_button
-from db import get_check_word, edit_word_translation, delete_word
+from db.words import get_check_word, edit_word_translation, delete_word
 
 
 @dp.message_handler(commands=['edit_word'], state='*', is_admin=True)

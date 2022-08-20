@@ -3,7 +3,7 @@ import asyncio
 from loader import dp, logger
 from handlers.admin import admin_panel, add_word, get_words
 from handlers.users import menu, word_callback
-from db import con
+from db.init_base import con
 from services.distribution import distribution_cycle
 
 

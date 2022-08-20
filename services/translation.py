@@ -1,11 +1,10 @@
 import translators as ts
 import logging
 
-from aiogram.types import Message, InputFile
-from aiogram.dispatcher import FSMContext
+from aiogram.types import InputFile
 
 from loader import dp
-from db import get_random_word, get_translation_choices
+from db.words import get_random_word, get_translation_choices
 from keyboards.inline import translate_choices_kb
 from states.user import TranslateWord
 from .image_word import create_new_image

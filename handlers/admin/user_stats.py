@@ -1,6 +1,3 @@
-import logging
-import typing
-
 from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
 from aiogram.types import ReplyKeyboardRemove
@@ -9,7 +6,7 @@ from loader import dp
 from states.admin import UserStats, AdminPanel
 from keyboards.reply import search_mode_kb, admin_kb
 from keyboards.reply import telegram_id_mode, username_mode, back
-from db import get_stats_by_telegram_id, get_stats_by_username
+from db.user import get_stats_by_telegram_id, get_stats_by_username
 
 
 @dp.message_handler(commands=['get_stats'], state='*', is_admin=True)

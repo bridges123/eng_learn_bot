@@ -1,9 +1,7 @@
 import logging
 from aiogram.types import Message
-from aiogram.dispatcher import FSMContext
 
-from loader import dp
-from db import get_stats_by_telegram_id
+from db.user import get_stats_by_telegram_id
 from keyboards.reply import menu_kb
 
 

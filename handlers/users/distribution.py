@@ -1,7 +1,6 @@
 from aiogram.types import Message
 
-from loader import dp
-from db import change_distrib
+from db.user import change_distrib
 from keyboards.reply import menu_kb
 
 

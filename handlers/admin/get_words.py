@@ -1,11 +1,7 @@
-import logging
-import typing
-
-from aiogram.types import Message, ReplyKeyboardRemove
-from aiogram.dispatcher import FSMContext
+from aiogram.types import Message
 
 from loader import dp
-from db import get_words
+from db.words import get_words
 
 
 @dp.message_handler(commands=['get_words'], state='*', is_admin=True)

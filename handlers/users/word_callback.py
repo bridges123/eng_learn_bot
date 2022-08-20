@@ -1,12 +1,11 @@
 import logging
-import typing
 
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import CallbackQuery
 from aiogram.dispatcher import FSMContext
 
 from loader import dp
 from states.user import UserMenu
-from db import add_word_to_guessed, get_word_translation, update_total_words_count, update_translated_words_count
+from db.words import add_word_to_guessed, get_word_translation, update_total_words_count, update_translated_words_count
 from keyboards.callback import word_callback
 
 

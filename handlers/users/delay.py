@@ -1,9 +1,7 @@
-import logging
-from aiogram.types import Message, ReplyKeyboardRemove
-from aiogram.dispatcher import FSMContext
+from aiogram.types import Message
 
 from loader import dp
-from db import get_current_delay, set_new_delay
+from db.user import get_current_delay, set_new_delay
 from states.user import Delay, UserMenu
 from keyboards.reply import delay_choice_kb, menu_kb, back_kb
 from keyboards.reply import change_button, back

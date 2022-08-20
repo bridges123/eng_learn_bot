@@ -1,7 +1,7 @@
 import asyncio
 from datetime import datetime
 
-from db import get_users_distribution, update_last_distrib
+from db.user import get_users_distribution, update_last_distrib
 from services.translation import translate_word
 
 
