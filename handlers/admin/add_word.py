@@ -1,5 +1,6 @@
 import logging
 import typing
+import shutil
 
 from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
@@ -38,6 +39,7 @@ async def add_many_words(message: Message):
             await message.answer('Ошибка добавления слов.', reply_markup=admin_kb)
     else:
         await message.answer('Неверный формат файла (JSON) или слишком большой размер (50 mb).', reply_markup=admin_kb)
+    shutil.rmtree('documents')
     await AdminPanel.active.set()
 
 
