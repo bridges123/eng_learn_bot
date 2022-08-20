@@ -2,6 +2,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 
 
 class AddWord(StatesGroup):
+    many_words_file = State()
     word_eng = State()
     word_rus = State()
     is_translate = State()

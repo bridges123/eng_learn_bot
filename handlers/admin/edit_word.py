@@ -80,7 +80,7 @@ async def edit_word_confirm(message: Message, state: FSMContext):
             translation = data.get('translation')
             if word and translation:
                 # add get edited image
-                response: bool = edit_word_translation(word, translation, '')
+                response: bool = edit_word_translation(word, translation)
                 if response:
                     await message.answer('Перевод успешно изменён.', reply_markup=words_choice_kb)
                 else:

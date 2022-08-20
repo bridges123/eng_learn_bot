@@ -19,8 +19,7 @@ cursor.execute("""
     CREATE TABLE IF NOT EXISTS words (
         id INTEGER PRIMARY KEY,
         word_eng VARCHAR,
-        word_rus VACHAR,
-        word_image VARCHAR
+        word_rus VACHAR
     )
 """)
 

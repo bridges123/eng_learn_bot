@@ -16,3 +16,4 @@ async def menu_stats(message: Message):
                              f'<b>Переведено слов:</b> <i>{words_translated}</i>\n'
                              f'<b>Задержка на рассылку:</b> <i>{delay} мин</i>',
                              reply_markup=menu_kb)
+        

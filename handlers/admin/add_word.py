@@ -11,13 +11,34 @@ from states.admin import AdminPanel
 from keyboards.reply import add_word_kb, confirm_kb, words_choice_kb, admin_kb
 from keyboards.reply import add_button, own_button, confirm_button, cancel_button, back
 from services.translation import google_translate_word
-from db.words import add_word
+from db.words import add_word, add_many_words_in_base
+
+
+@dp.message_handler(commands=['add_many_words'], state='*', is_admin=True)
+async def add_many_words(message: Message):
+    await message.answer('Отправьте файл со словами в формате JSON (ключ - слово на eng, значение - перевод):')
+    await AddWord.many_words_file.set()
 
 
 @dp.message_handler(commands=['add_word'], state='*', is_admin=True)
 async def add_word_start(message: Message):
     await message.answer('Введите слово, которое хотите добавить:', reply_markup=ReplyKeyboardRemove())
     await AddWord.word_eng.set()
+
+
+@dp.message_handler(content_types=['document'], state=AddWord.many_words_file, is_admin=True)
+async def add_many_words(message: Message):
+    doc: dict = message.document
+    await message.document.download()
+    if doc['mime_type'] == 'application/json' and doc['file_size'] < 50_000_000:
+        response: bool = add_many_words_in_base(doc['file_name'])
+        if response:
+            await message.answer('Слова успешно добавлены.', reply_markup=admin_kb)
+        else:
+            await message.answer('Ошибка добавления слов.', reply_markup=admin_kb)
+    else:
+        await message.answer('Неверный формат файла (JSON) или слишком большой размер (50 mb).', reply_markup=admin_kb)
+    await AdminPanel.active.set()
 
 
 @dp.message_handler(content_types=['text'], state=AddWord.word_eng, is_admin=True)
@@ -73,7 +94,7 @@ async def add_word_confirm(message: Message, state: FSMContext):
             word = data.get('word')
             translation = data.get('translation')
             if word and translation:
-                response: bool = add_word(word, translation, '')  # add image path
+                response: bool = add_word(word, translation)  # add image path
                 if response:
                     await message.answer('Слово успешно добавлено.', reply_markup=words_choice_kb)
                 else:

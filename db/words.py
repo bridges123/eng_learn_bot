@@ -1,4 +1,5 @@
 import logging
+import json
 
 from .init_base import cursor, con
 
@@ -69,14 +70,30 @@ def get_translation_choices(word: str) -> list | None:
         return None
 
 
-def add_word(word_eng: str, word_rus: str, word_image: str) -> bool:
+def add_word(word_eng: str, word_rus: str) -> bool:
     try:
-        cursor.execute("INSERT INTO words (word_eng, word_rus, word_image) VALUES (?, ?, ?)",
-                       (word_eng, word_rus, word_image))
+        cursor.execute("REPLACE INTO words (id, word_eng, word_rus) VALUES "
+                       "((SELECT id FROM words WHERE word_eng = ?), ?, ?)",
+                       (word_eng, word_eng, word_rus))
         con.commit()
         return True
     except Exception as ex:
         logging.error(f'Error add word in base {ex}')
+        return False
+
+
+def add_many_words_in_base(file_name: str) -> bool:
+    with open(file_name) as file:
+        data: dict = json.load(file)
+        if data and len(data):
+            for word_eng, word_rus in data.items():
+                cursor.execute("REPLACE INTO words (id, word_eng, word_rus) VALUES "
+                               "((SELECT id FROM words WHERE word_eng = ?), ?, ?)",
+                               (word_eng, word_eng, word_rus))
+            con.commit()
+            return True
+        else:
+            logging.error(f'Error empty data: {data}, {file_name}')
         return False
 
 
@@ -110,10 +127,10 @@ def update_translated_words_count(telegram_id: int) -> bool:
         return False
 
 
-def edit_word_translation(word_eng: str, word_rus: str, word_image: str) -> bool:
+def edit_word_translation(word_eng: str, word_rus: str) -> bool:
     try:
-        cursor.execute("UPDATE words SET word_rus = ?, word_image = ? WHERE word_eng = ?",
-                       (word_rus, word_image, word_eng))
+        cursor.execute("UPDATE words SET word_rus = ? WHERE word_eng = ?",
+                       (word_rus, word_eng))
         con.commit()
         return True
     except Exception as ex:
