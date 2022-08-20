@@ -1,6 +1,6 @@
 import logging
 
-from .init_base import cursor
+from .init_base import cursor, con
 
 
 def get_words() -> list:
@@ -57,9 +57,7 @@ def get_translation_choices(word: str) -> list | None:
     cursor.execute(f"""
         SELECT word_rus
         FROM words w
-        LEFT JOIN guessed_words gw
-        ON w.id = gw.word_id 
-        WHERE word_eng != ? AND gw.word_id IS NULL
+        WHERE word_eng != ?
         ORDER BY random()
         LIMIT 3
     """, (word,))

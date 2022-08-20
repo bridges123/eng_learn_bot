@@ -22,10 +22,11 @@ menu_kb.add(delay_button, distribution_button)
 admin_kb = ReplyKeyboardMarkup(resize_keyboard=True)
 words = KeyboardButton('Слова')
 get_stats = KeyboardButton('Статистика пользователя')
-settings = KeyboardButton('Настройки')
-support = KeyboardButton('Поддержка')
+# add edit admin staffdfxb
+# settings = KeyboardButton('Настройки')
+# support = KeyboardButton('Поддержка')
 admin_kb.add(words, get_stats)
-admin_kb.add(settings, support)
+# admin_kb.add(settings, support)
 
 
 """ Клавиатура выбора под-меню 'Слова' """

@@ -1,7 +1,7 @@
 import datetime
 import logging
 
-from .init_base import cursor
+from .init_base import cursor, con
 
 
 def add_user(telegram_id: int, username: str) -> bool:

@@ -41,9 +41,8 @@ async def apanel_commands(message: Message):
             await admin_panel(message)
         case 'Статистика пользователя':
             await get_stats(message)
-        case 'Настройки':
-            pass
-        case 'Поддержка':
-            pass
+        # add edit admin staff
+        # case 'Настройки':
+        #     pass
         case _:
             await message.answer('Такой команды нет. Попробуйте /apanel')

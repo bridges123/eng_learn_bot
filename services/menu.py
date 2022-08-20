@@ -12,8 +12,7 @@ async def menu_stats(message: Message):
         await message.answer('Ошибка получения статистики!')
     else:
         words_total, words_translated, delay = stats
-        await message.answer('Ваша статистика:\n'
-                             f'Всего слов: {words_total}\n'
-                             f'Переведено слов: {words_translated}\n'
-                             f'Задержка на рассылку: {delay}',
+        await message.answer(f'<b>Всего слов:</b> <i>{words_total}</i>\n'
+                             f'<b>Переведено слов:</b> <i>{words_translated}</i>\n'
+                             f'<b>Задержка на рассылку:</b> <i>{delay} мин</i>',
                              reply_markup=menu_kb)

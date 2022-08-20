@@ -1,7 +1,7 @@
 import asyncio
 from datetime import datetime
 
-from db.user import get_users_distribution, update_last_distrib
+from db.user import get_users_distribution, update_last_distrib, change_distrib
 from services.translation import translate_word
 
 
@@ -20,6 +20,8 @@ async def distribution_cycle():
                     if not last_distrib:
                         update_last_distrib(telegram_id, datetime.now().timestamp())
                     elif datetime.now().timestamp() > last_distrib + delay * 60:
-                        await translate_word(telegram_id)
+                        response: bool = await translate_word(telegram_id)
+                        if not response:
+                            change_distrib(telegram_id)
                         update_last_distrib(telegram_id, datetime.now().timestamp())
         await asyncio.sleep(1)
