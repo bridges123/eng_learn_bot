@@ -9,49 +9,78 @@ from aiogram.types import ReplyKeyboardRemove
 from loader import dp
 from states.user import AddWord
 from states.admin import AdminPanel
-from keyboards.reply import add_word_kb, confirm_kb, words_choice_kb, admin_kb
-from keyboards.reply import add_button, own_button, confirm_button, cancel_button, back
+from keyboards.reply import add_word_kb, confirm_kb, words_choice_kb, admin_kb, add_mode_kb, back_kb
+from keyboards.reply import add_button, own_button, confirm_button, cancel_button
+from keyboards.reply import one_word_button, many_word_button, back
 from services.translation import google_translate_word
 from db.words import add_word, add_many_words_in_base
 
 
+async def add_mode_choice(message: Message):
+    await message.answer('Выберите режим добавления:', reply_markup=add_mode_kb)
+    await AdminPanel.add_mode_choice.set()
+
+
+@dp.message_handler(state=AdminPanel.add_mode_choice, is_admin=True)
+async def get_add_mode(message: Message):
+    match message.text:
+        case one_word_button.text:
+            await add_word_start(message)
+        case many_word_button.text:
+            await add_many_words(message)
+        case back.text:
+            await message.answer('Выберите действие:', reply_markup=words_choice_kb)
+            await AdminPanel.active.set()
+        case _:
+            await message.answer('Ошибка! Неверная команда.', reply_markup=words_choice_kb)
+            await AdminPanel.active.set()
+
+
 @dp.message_handler(commands=['add_many_words'], state='*', is_admin=True)
 async def add_many_words(message: Message):
-    await message.answer('Отправьте файл со словами в формате JSON (ключ - слово на eng, значение - перевод):')
+    await message.answer('Отправьте файл со словами в формате JSON (ключ - слово на eng, значение - перевод):',
+                         reply_markup=back_kb)
     await AddWord.many_words_file.set()
 
 
 @dp.message_handler(commands=['add_word'], state='*', is_admin=True)
 async def add_word_start(message: Message):
-    await message.answer('Введите слово, которое хотите добавить:', reply_markup=ReplyKeyboardRemove())
+    await message.answer('Введите слово, которое хотите добавить:', reply_markup=back_kb)
     await AddWord.word_eng.set()
 
 
-@dp.message_handler(content_types=['document'], state=AddWord.many_words_file, is_admin=True)
-async def add_many_words(message: Message):
-    doc: dict = message.document
-    await message.document.download()
-    if doc['mime_type'] == 'application/json' and doc['file_size'] < 50_000_000:
-        response: bool = add_many_words_in_base(doc['file_name'])
-        if response:
-            await message.answer('Слова успешно добавлены.', reply_markup=admin_kb)
-        else:
-            await message.answer('Ошибка добавления слов.', reply_markup=admin_kb)
+@dp.message_handler(content_types=['text', 'document'], state=AddWord.many_words_file, is_admin=True)
+async def get_many_words_file(message: Message):
+    if message.text == back.text:
+        await message.answer('Выберите действие:', reply_markup=words_choice_kb)
     else:
-        await message.answer('Неверный формат файла (JSON) или слишком большой размер (50 mb).', reply_markup=admin_kb)
-    shutil.rmtree('documents')
+        doc: dict = message.document
+        await message.document.download()
+        if doc['mime_type'] == 'application/json' and doc['file_size'] < 50_000_000:
+            response: bool = add_many_words_in_base(doc['file_name'])
+            if response:
+                await message.answer('Слова успешно добавлены.', reply_markup=admin_kb)
+            else:
+                await message.answer('Ошибка добавления слов.', reply_markup=admin_kb)
+        else:
+            await message.answer('Неверный формат файла (JSON) или слишком большой размер (50 mb).', reply_markup=admin_kb)
+        shutil.rmtree('documents')
     await AdminPanel.active.set()
 
 
 @dp.message_handler(content_types=['text'], state=AddWord.word_eng, is_admin=True)
 async def add_word_eng(message: Message, state: FSMContext):
-    word_eng: str = message.text
-    translation: str = google_translate_word(word_eng)
-    await state.update_data(word=word_eng)
-    await state.update_data(translation=translation)
-    await message.answer(f'Предложен перевод: <b>{translation}</b>. Добавить, или предложите свой?',
-                         reply_markup=add_word_kb)
-    await AddWord.is_translate.set()
+    if message.text == back.text:
+        await message.answer('Выберите действие:', reply_markup=words_choice_kb)
+        await AdminPanel.active.set()
+    else:
+        word_eng: str = message.text
+        translation: str = google_translate_word(word_eng)
+        await state.update_data(word=word_eng)
+        await state.update_data(translation=translation)
+        await message.answer(f'Предложен перевод: <b>{translation}</b>. Добавить, или предложите свой?',
+                             reply_markup=add_word_kb)
+        await AddWord.is_translate.set()
 
 
 @dp.message_handler(content_types=['text'], state=AddWord.is_translate, is_admin=True)

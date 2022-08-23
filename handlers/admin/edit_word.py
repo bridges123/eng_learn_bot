@@ -8,29 +8,33 @@ from aiogram.types import ReplyKeyboardRemove
 from loader import dp
 from states.user import EditWord
 from states.admin import AdminPanel
-from keyboards.reply import words_choice_kb, edit_choice_kb, confirm_kb
-from keyboards.reply import edit_translate_button, delete_word_button, confirm_button, cancel_button
+from keyboards.reply import words_choice_kb, edit_choice_kb, confirm_kb, back_kb
+from keyboards.reply import edit_translate_button, delete_word_button, confirm_button, cancel_button, back
 from db.words import get_check_word, edit_word_translation, delete_word
 
 
 @dp.message_handler(commands=['edit_word'], state='*', is_admin=True)
 async def edit_word_start(message: Message):
-    await message.answer('Введите слово, которое хотите изменить:', reply_markup=ReplyKeyboardRemove())
+    await message.answer('Введите слово, которое хотите изменить:', reply_markup=back_kb)
     await EditWord.word_eng.set()
 
 
 @dp.message_handler(content_types=['text'], state=EditWord.word_eng, is_admin=True)
 async def edit_word_eng(message: Message, state: FSMContext):
-    word_eng: str = message.text
-    checked_word: str | None = get_check_word(word_eng)
-    if not checked_word:
-        logging.error(f'Error not find gived word {checked_word}')
-        await message.answer('Ошибка! Слово не было найдено.', reply_markup=words_choice_kb)
+    if message.text == back.text:
+        await message.answer('Выберите действие:', reply_markup=words_choice_kb)
         await AdminPanel.active.set()
     else:
-        await state.update_data(word=checked_word)
-        await message.answer(f'Слово <b>{checked_word}</b> найдено. Выберите действие:', reply_markup=edit_choice_kb)
-        await EditWord.edit_choice.set()
+        word_eng: str = message.text
+        checked_word: str | None = get_check_word(word_eng)
+        if not checked_word:
+            logging.error(f'Error not find gived word {checked_word}')
+            await message.answer('Ошибка! Слово не было найдено.', reply_markup=words_choice_kb)
+            await AdminPanel.active.set()
+        else:
+            await state.update_data(word=checked_word)
+            await message.answer(f'Слово <b>{checked_word}</b> найдено. Выберите действие:', reply_markup=edit_choice_kb)
+            await EditWord.edit_choice.set()
 
 
 @dp.message_handler(content_types=['text'], state=EditWord.edit_choice, is_admin=True)

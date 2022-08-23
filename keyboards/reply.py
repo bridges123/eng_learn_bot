@@ -39,6 +39,14 @@ words_choice_kb.add(all_words, add_word)
 words_choice_kb.add(change_word, back)
 
 
+""" Клавиатура выбора режима добавления слов """
+add_mode_kb = ReplyKeyboardMarkup(resize_keyboard=True)
+one_word_button = KeyboardButton('Одно слово')
+many_word_button = KeyboardButton('Много слов')
+add_mode_kb.add(one_word_button, many_word_button)
+add_mode_kb.add(back)
+
+
 """ Клавиатура добавления нового слова """
 add_word_kb = ReplyKeyboardMarkup(resize_keyboard=True)
 add_button = KeyboardButton('Добавить')

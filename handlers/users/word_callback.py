@@ -27,7 +27,7 @@ async def word_callback_know(call: CallbackQuery, callback_data: dict, state: FS
     msg: str
     match answer:
         case 'yes':
-            msg = f'Молодец! Ты угадал: <b>{word} - {translation}</b>'
+            msg = f'✅Молодец! Ты угадал: <b>{word} - {translation}</b>'
             # Добавляем угаданное слово в фильтр-таблицу и инкременируем счётчики
             add_word_to_guessed(telegram_id, word)
             response1: bool = update_translated_words_count(telegram_id)
@@ -35,7 +35,7 @@ async def word_callback_know(call: CallbackQuery, callback_data: dict, state: FS
             if not all([response1, response2]):
                 msg = 'Ошибка! Не удалось записать результат!'
         case 'no':
-            msg = f'Неверно! Запоминай новое слово: <b>{word} - {translation}</b>'
+            msg = f'❓Неверно! Запоминай новое слово: <b>{word} - {translation}</b>'
             response: bool = update_total_words_count(telegram_id)
             if not response:
                 msg = 'Ошибка! Не удалось записать результат!'

@@ -9,7 +9,7 @@ from states.admin import AdminPanel
 from states.user import UserMenu
 from services.menu import menu_stats
 from .get_words import get_all_words
-from .add_word import add_word_start
+from .add_word import add_mode_choice
 from .edit_word import edit_word_start
 from .user_stats import get_stats
 
@@ -34,7 +34,7 @@ async def apanel_commands(message: Message):
         case 'Слова':
             await message.answer('Выберите действие:', reply_markup=words_choice_kb)
         case 'Добавить слово':
-            await add_word_start(message)
+            await add_mode_choice(message)
         case 'Изменить/Удалить':
             await edit_word_start(message)
         case 'Назад':

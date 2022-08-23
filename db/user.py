@@ -44,6 +44,8 @@ def change_distrib(telegram_id: int) -> tuple:
             distrib: bool = distrib[0]
             cursor.execute(f"UPDATE users SET distribution = ? WHERE telegram_id = ?",
                            (not distrib, telegram_id))
+            if not distrib:
+                update_last_distrib(telegram_id, datetime.datetime.now().timestamp())
             con.commit()
             return True, not distrib
         else:
